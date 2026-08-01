@@ -1,0 +1,33 @@
+<mat-card class="page-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Payment messages</mat-card-title>
+    <mat-card-subtitle>
+      Kafka <code>payment-confirmed</code> → notification service → SMS mock + this list
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-actions align="end">
+    <button mat-stroked-button type="button" (click)="load()" [disabled]="loading()">Refresh</button>
+    <button mat-flat-button color="primary" type="button" (click)="markAllRead()">Mark all read</button>
+  </mat-card-actions>
+
+  <mat-card-content>
+    <p *ngIf="loading()">Loading…</p>
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+
+    <mat-nav-list *ngIf="!loading() && items().length">
+      <a mat-list-item *ngFor="let item of items()" (click)="markRead(item.notificationId)">
+        <mat-icon matListItemIcon>{{ item.read ? 'mark_email_read' : 'sms' }}</mat-icon>
+        <span matListItemTitle>{{ item.message }}</span>
+        <span matListItemLine>
+          {{ item.channel }} → {{ item.recipient }} · Order {{ item.orderId }} · {{ item.createdAt | date:'short' }}
+          <span *ngIf="!item.read"> · unread</span>
+        </span>
+      </a>
+    </mat-nav-list>
+
+    <p *ngIf="!loading() && !items().length" class="empty">
+      No messages yet. Complete a payment — Kafka will create a confirmation SMS mock here.
+    </p>
+  </mat-card-content>
+</mat-card>

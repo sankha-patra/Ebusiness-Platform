@@ -1,0 +1,49 @@
+<mat-card class="page-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Products</mat-card-title>
+    <mat-card-subtitle>Pick a product, then Buy</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <mat-form-field appearance="outline" class="filter">
+      <mat-label>Category</mat-label>
+      <mat-select [(ngModel)]="selectedCategory" (selectionChange)="loadProducts()">
+        <mat-option value="">All</mat-option>
+        <mat-option value="electronics">Electronics</mat-option>
+        <mat-option value="clothing">Clothing</mat-option>
+        <mat-option value="books">Books</mat-option>
+        <mat-option value="home">Home & Garden</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-progress-bar *ngIf="loading()" mode="indeterminate"></mat-progress-bar>
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+
+    <div class="grid" *ngIf="!loading() && !error() && products().length">
+      <mat-card *ngFor="let product of products()" class="product-card" appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>{{ product.name }}</mat-card-title>
+          <mat-card-subtitle>{{ product.productId }} · {{ product.status }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="description">{{ product.description }}</p>
+          <p class="price">{{ product.currency }} {{ product.price }}</p>
+          <p class="stock">{{ product.stockQuantity }} in stock</p>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            (click)="buy(product)"
+            [disabled]="product.stockQuantity < 1 || product.status !== 'ACTIVE'"
+          >
+            Buy
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <p *ngIf="!loading() && !error() && !products().length" class="empty">No products found.</p>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,28 @@
+# Build
+**/target/
+**/dist/
+**/.angular/
+**/out/
+
+# Dependencies
+**/node_modules/
+**/.pnpm-store/
+**/.maven-cache/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+**/application-local.yml
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+*.log
+
+# Temp
+.tmp-notes/
+**/hs_err_pid*

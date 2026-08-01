@@ -1,0 +1,22 @@
+<div class="app-shell">
+  <mat-toolbar class="top-bar">
+    <span class="brand">EBusiness</span>
+    <nav class="nav">
+      <a mat-button routerLink="/orders" routerLinkActive="active">Orders</a>
+      <a mat-button routerLink="/products" routerLinkActive="active">Products</a>
+      <a mat-button routerLink="/payments" routerLinkActive="active">Payments</a>
+      <a mat-button routerLink="/notifications" routerLinkActive="active">
+        <span
+          [matBadge]="unreadCount() || null"
+          matBadgeColor="warn"
+          matBadgeSize="small"
+          [matBadgeHidden]="!unreadCount()"
+        >Messages</span>
+      </a>
+    </nav>
+  </mat-toolbar>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

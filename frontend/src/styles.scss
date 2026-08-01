@@ -1,0 +1,69 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$azure-palette
+    ),
+    typography: Roboto,
+    density: -1
+  ));
+  /* Prevent navbar jump when scrollbar appears/disappears */
+  scrollbar-gutter: stable;
+}
+
+:root {
+  --mat-sys-primary: #111111;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-secondary: #333333;
+  --mat-sys-on-secondary: #ffffff;
+  --mat-sys-surface: #ffffff;
+  --mat-sys-on-surface: #111111;
+  --mat-sys-surface-container: #f7f7f7;
+  --mat-sys-outline: #d6d6d6;
+  --app-radius: 14px;
+  --app-font: 'Roboto', 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: var(--app-font);
+  font-size: 15px;
+  line-height: 1.45;
+  background: #f3f3f3;
+  color: #111;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2, h3, .mat-mdc-card-title {
+  font-family: var(--app-font);
+  letter-spacing: -0.01em;
+}
+
+code {
+  font-family: ui-monospace, Consolas, 'Courier New', monospace;
+  background: #efefef;
+  padding: 0.1rem 0.35rem;
+  border-radius: 6px;
+  font-size: 0.86em;
+}
+
+.page-card.mat-mdc-card {
+  border-radius: var(--app-radius) !important;
+}

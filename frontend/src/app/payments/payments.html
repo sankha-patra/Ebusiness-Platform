@@ -1,0 +1,117 @@
+<mat-card class="page-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Payments</mat-card-title>
+    <mat-card-subtitle>
+      Indian card <code>5267 3181 8797 5449</code> · UPI <code>success@razorpay</code>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-progress-bar *ngIf="loading()" mode="indeterminate"></mat-progress-bar>
+
+  <mat-card-content>
+    <mat-card *ngIf="selectedProduct() as product" class="product-context" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>Buying: {{ product.name }}</mat-card-title>
+        <mat-card-subtitle>Product ID: {{ product.productId }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="price-line">{{ product.currency }} {{ product.price }}</p>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <a mat-button routerLink="/products">Change product</a>
+        <button mat-button type="button" (click)="clearProduct()">Clear</button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card *ngIf="!selectedProduct()" class="product-context warn" appearance="outlined">
+      <mat-card-content>
+        <p>No product selected. Go to <a routerLink="/products">Products</a> and click <strong>Buy</strong>.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="confirmSuccess()" class="confirm success" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{ confirmTitle() }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ confirmMessage() }}</p>
+        <ul>
+          <li *ngFor="let item of confirmDetails() | keyvalue">
+            <strong>{{ item.key }}:</strong> {{ item.value }}
+          </li>
+        </ul>
+        <p class="hint-text">Kafka will create an SMS confirmation — check <strong>Messages</strong>.</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button color="primary" type="button" (click)="dismissConfirmation()">OK</button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card *ngIf="confirmFailed()" class="confirm failed" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{ confirmTitle() }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ confirmMessage() }}</p>
+        <ul>
+          <li *ngFor="let item of confirmDetails() | keyvalue">
+            <strong>{{ item.key }}:</strong> {{ item.value }}
+          </li>
+        </ul>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-stroked-button type="button" (click)="dismissConfirmation()">OK</button>
+      </mat-card-actions>
+    </mat-card>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Amount (INR)</mat-label>
+        <input matInput type="number" [(ngModel)]="amount" [readonly]="amountLocked" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Receipt</mat-label>
+        <input matInput [(ngModel)]="receipt" [readonly]="amountLocked" />
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        (click)="createRazorpayOrder()"
+        [disabled]="loading() || !selectedProduct()"
+      >
+        Pay for this product
+      </button>
+    </div>
+
+    <div class="form-grid status-row">
+      <mat-form-field appearance="outline" class="grow">
+        <mat-label>Razorpay Order ID</mat-label>
+        <input matInput [(ngModel)]="razorpayOrderId" />
+      </mat-form-field>
+      <button mat-stroked-button type="button" (click)="getPaymentStatus()" [disabled]="loading()">
+        Check status
+      </button>
+    </div>
+
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+
+    <mat-card *ngIf="razorpayOrderResponse() as order" appearance="outlined" class="detail">
+      <mat-card-content>
+        <p *ngIf="selectedProduct() as product">Product: <strong>{{ product.name }}</strong> ({{ product.productId }})</p>
+        <p>Local order: <code>{{ order.orderId || '-' }}</code></p>
+        <p>Razorpay: <code>{{ order.razorpayOrderId }}</code></p>
+        <p>Amount: {{ order.currency }} {{ order.amount }} (paise)</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="paymentStatus() as status" appearance="outlined" class="detail">
+      <mat-card-content>
+        <p>Status: <strong>{{ status.status }}</strong></p>
+        <p>Payment ID: <code>{{ status.paymentId }}</code></p>
+      </mat-card-content>
+    </mat-card>
+  </mat-card-content>
+</mat-card>

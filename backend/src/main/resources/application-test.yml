@@ -1,0 +1,33 @@
+spring:
+  # Test Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ebusiness_test
+    username: ebusiness_user
+    password: ebusiness_pass
+  
+  # Test Redis Configuration
+  redis:
+    host: localhost
+    port: 6379
+  
+  # Test Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+  
+  # JPA for tests
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+# Test Razorpay Configuration (use test mode)
+razorpay:
+  key-id: test_key_id
+  key-secret: test_key_secret
+  currency: INR
+
+# Logging for tests
+logging:
+  level:
+    com.ebusiness.platform: DEBUG
+    org.springframework.cache: DEBUG
+    org.springframework.kafka: DEBUG

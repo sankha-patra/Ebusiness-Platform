@@ -1,0 +1,66 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+      routes:
+        # Pass-through to monolith today. Later: split hosts per service.
+        - id: products
+          uri: ${MONOLITH_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/products,/api/v1/products/**
+        - id: orders
+          uri: ${MONOLITH_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/orders,/api/v1/orders/**
+        - id: payments
+          uri: ${MONOLITH_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/payments,/api/v1/payments/**
+        - id: notifications
+          uri: ${MONOLITH_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/notifications,/api/v1/notifications/**
+          # Preserve raw body for Razorpay webhook signature verification
+        - id: load-test
+          uri: ${MONOLITH_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/load-test/**
+        - id: actuator-monolith
+          uri: ${MONOLITH_URI:http://localhost:8081}
+          predicates:
+            - Path=/actuator/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    reactor.netty.http.client: INFO
