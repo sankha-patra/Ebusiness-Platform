@@ -98,3 +98,17 @@ resilience4j:
 
 kafka:
   enabled: true
+
+outbox:
+  poll-interval-ms: 2000
+
+# Product HTTP → product-service (:8083). Payment HTTP + outbox publisher → payment-service (:8084).
+ebusiness:
+  legacy-products:
+    http-enabled: false
+  legacy-payments:
+    http-enabled: false
+  legacy-orders:
+    http-enabled: false
+  outbox:
+    publisher-enabled: false

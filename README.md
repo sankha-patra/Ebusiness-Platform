@@ -4,12 +4,30 @@ A full-stack enterprise B2B platform with Redis caching, Kafka event streaming, 
 
 ## Architecture
 
-- **Backend**: Spring Boot 3 with Java 17
-- **Frontend**: Angular 18
-- **Database**: PostgreSQL 15 (Free tier compatible)
-- **Cache**: Redis 7 (Free tier - single instance)
-- **Message Broker**: Apache Kafka (Free tier - single broker)
-- **Payment Gateway**: Razorpay (Free test mode)
+- **API Gateway**: Spring Cloud Gateway `:8080`
+- **Product service**: Spring Boot `:8083` (catalog + Redis)
+- **Order service**: Spring Boot `:8082` (orders API + payment-confirmed → mark PAID)
+- **Payment service**: Spring Boot `:8084` (Razorpay + transactional outbox)
+- **Monolith (legacy)**: Spring Boot `:8081` — notifications (Kafka consumer)
+- **Frontend**: Angular 18 `:4200`
+- **Database**: PostgreSQL 15 (shared until DBs split)
+- **Cache**: Redis 7
+- **Message Broker**: Apache Kafka
+- **Payment Gateway**: Razorpay (test mode)
+
+Event contracts stay thin JSON (`PaymentConfirmed` with `paymentId`/`orderId`) — no fat `common-dto` JAR.
+
+### Run services
+
+```bash
+docker-compose up -d
+cd api-gateway && mvn spring-boot:run      # :8080
+cd backend && mvn spring-boot:run          # :8081 notifications
+cd order-service && mvn spring-boot:run    # :8082
+cd product-service && mvn spring-boot:run  # :8083
+cd payment-service && mvn spring-boot:run  # :8084
+cd frontend && npm start                   # :4200
+```
 
 ## Features
 

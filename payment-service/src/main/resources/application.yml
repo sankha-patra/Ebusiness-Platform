@@ -1,0 +1,51 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: payment-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ebusiness
+    username: ebusiness_user
+    password: ebusiness_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID:your_key_id}
+  key-secret: ${RAZORPAY_KEY_SECRET:your_key_secret}
+  currency: INR
+  webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:your_webhook_secret}
+
+kafka:
+  enabled: true
+
+outbox:
+  poll-interval-ms: 2000
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      razorpayApi:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.ebusiness.payment: INFO

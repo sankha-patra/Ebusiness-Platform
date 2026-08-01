@@ -95,10 +95,6 @@ public class KafkaConsumerService {
             event.getPaymentId(), event.getOrderId());
         
         try {
-            if (event.getOrderId() != null) {
-                orderService.markPaidFromEvent(event.getOrderId());
-            }
-
             notificationService.notifyPaymentSuccess(
                 event.getOrderId(),
                 event.getPaymentId(),

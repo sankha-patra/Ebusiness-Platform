@@ -5,16 +5,22 @@ import com.ebusiness.platform.dto.PaymentVerifyRequest;
 import com.ebusiness.platform.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
+/**
+ * Disabled by default — HTTP payments owned by payment-service (:8084).
+ * PaymentService bean stays for Kafka consumers until fully decoupled.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "ebusiness.legacy-payments.http-enabled", havingValue = "true")
 public class PaymentController {
 
     private final PaymentService paymentService;

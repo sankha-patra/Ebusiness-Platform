@@ -6,15 +6,22 @@ import com.ebusiness.platform.dto.ProductCreateRequest;
 import com.ebusiness.platform.dto.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Disabled by default — HTTP catalog owned by product-service (:8083).
+ * Keep entities/repos here so Order/Payment can still join products until Order is extracted.
+ * Set ebusiness.legacy-products.http-enabled=true only for local rollback.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "ebusiness.legacy-products.http-enabled", havingValue = "true")
 public class ProductController {
 
     private final ProductCatalogService productCatalogService;

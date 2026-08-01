@@ -1,23 +1,18 @@
-package com.ebusiness.platform.controller;
+package com.ebusiness.order.controller;
 
-import com.ebusiness.platform.dto.OrderStatusResponse;
-import com.ebusiness.platform.dto.OrderSummaryResponse;
-import com.ebusiness.platform.dto.PageResponse;
-import com.ebusiness.platform.service.OrderService;
+import com.ebusiness.order.dto.OrderStatusResponse;
+import com.ebusiness.order.dto.OrderSummaryResponse;
+import com.ebusiness.order.dto.PageResponse;
+import com.ebusiness.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Disabled by default — HTTP orders owned by order-service (:8082).
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "ebusiness.legacy-orders.http-enabled", havingValue = "true")
 public class OrderController {
 
     private final OrderService orderService;
@@ -27,8 +22,6 @@ public class OrderController {
             @RequestHeader(value = "X-Tenant-ID", required = false) String tenantId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-
-        log.info("GET /api/v1/orders page={} size={} tenant={}", page, size, tenantId);
         return ResponseEntity.ok(orderService.listOrders(tenantId, page, size));
     }
 
@@ -36,10 +29,7 @@ public class OrderController {
     public ResponseEntity<OrderStatusResponse> getOrderStatus(
             @RequestHeader("X-Tenant-ID") String tenantId,
             @PathVariable String orderId) {
-        
-        log.info("GET /api/v1/orders/{}/status for tenant: {}", orderId, tenantId);
-        OrderStatusResponse response = orderService.getOrderStatus(tenantId, orderId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(orderService.getOrderStatus(tenantId, orderId));
     }
 
     @PutMapping("/{orderId}/status")
@@ -47,8 +37,6 @@ public class OrderController {
             @RequestHeader("X-Tenant-ID") String tenantId,
             @PathVariable String orderId,
             @RequestParam String status) {
-        
-        log.info("PUT /api/v1/orders/{}/status to {} for tenant: {}", orderId, status, tenantId);
         orderService.updateOrderStatus(tenantId, orderId, status);
         return ResponseEntity.noContent().build();
     }

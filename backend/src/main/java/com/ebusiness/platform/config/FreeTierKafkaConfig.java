@@ -39,6 +39,9 @@ public class FreeTierKafkaConfig {
         config.put(org.apache.kafka.clients.producer.ProducerConfig.LINGER_MS_CONFIG, 10);
         config.put(org.apache.kafka.clients.producer.ProducerConfig.BATCH_SIZE_CONFIG, 16384);
         config.put(org.apache.kafka.clients.producer.ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+        config.put(JsonSerializer.TYPE_MAPPINGS,
+            "paymentConfirmed:com.ebusiness.platform.event.PaymentConfirmedEvent,"
+                + "orderStatus:com.ebusiness.platform.event.OrderStatusChangeEvent");
         
         return new DefaultKafkaProducerFactory<>(config);
     }
@@ -58,6 +61,11 @@ public class FreeTierKafkaConfig {
         config.put(org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         config.put(org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        config.put(JsonDeserializer.TYPE_MAPPINGS,
+            "paymentConfirmed:com.ebusiness.platform.event.PaymentConfirmedEvent,"
+                + "orderStatus:com.ebusiness.platform.event.OrderStatusChangeEvent,"
+                + "com.ebusiness.payment.event.PaymentConfirmedEvent:com.ebusiness.platform.event.PaymentConfirmedEvent,"
+                + "com.ebusiness.payment.event.OrderStatusChangeEvent:com.ebusiness.platform.event.OrderStatusChangeEvent");
         
         // Free tier optimizations
         config.put(org.apache.kafka.clients.consumer.ConsumerConfig.FETCH_MIN_BYTES_CONFIG, 1024);

@@ -1,0 +1,124 @@
+package com.ebusiness.order.service;
+
+import com.ebusiness.order.dto.*;
+import com.ebusiness.order.entity.Order;
+import com.ebusiness.order.entity.OrderItem;
+import com.ebusiness.order.entity.Payment;
+import com.ebusiness.order.event.OrderStatusChangeEvent;
+import com.ebusiness.order.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+
+    private final OrderRepository orderRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    @Transactional(readOnly = true)
+    public PageResponse<OrderSummaryResponse> listOrders(String tenantId, int page, int size) {
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), 100);
+        var pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Order> orders = (tenantId != null && !tenantId.isBlank())
+            ? orderRepository.findByTenant_TenantId(tenantId, pageable)
+            : orderRepository.findAll(pageable);
+
+        List<OrderSummaryResponse> content = orders.getContent().stream()
+            .map(this::mapToSummary)
+            .collect(Collectors.toList());
+
+        return new PageResponse<>(content, orders.getNumber(), orders.getSize(),
+            orders.getTotalElements(), orders.getTotalPages());
+    }
+
+    @Transactional(readOnly = true)
+    public OrderStatusResponse getOrderStatus(String tenantId, String orderId) {
+        Order order = orderRepository.findByTenantAndId(tenantId, orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+        return mapToStatus(order);
+    }
+
+    @Transactional
+    public void updateOrderStatus(String tenantId, String orderId, String newStatus) {
+        Order order = orderRepository.findByTenantAndId(tenantId, orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+        String oldStatus = order.getStatus();
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+
+        OrderStatusChangeEvent event = new OrderStatusChangeEvent();
+        event.setEventId(UUID.randomUUID().toString());
+        event.setTenantId(tenantId);
+        event.setOrderId(orderId);
+        event.setOldStatus(oldStatus);
+        event.setNewStatus(newStatus);
+        event.setTimestamp(LocalDateTime.now());
+        kafkaTemplate.send("order-status-updates", orderId, event);
+    }
+
+    @Transactional
+    public void markPaidFromEvent(String orderId) {
+        orderRepository.findByOrderId(orderId).ifPresent(order -> {
+            if (!"PAID".equals(order.getStatus())) {
+                order.setStatus("PAID");
+                orderRepository.save(order);
+                log.info("Order {} marked PAID from payment-confirmed", orderId);
+            }
+        });
+    }
+
+    private OrderSummaryResponse mapToSummary(Order order) {
+        String paymentStatus = "NONE";
+        if (order.getPayments() != null && !order.getPayments().isEmpty()) {
+            paymentStatus = order.getPayments().iterator().next().getStatus();
+        }
+        String tenantId = order.getTenant() != null ? order.getTenant().getTenantId() : null;
+        return new OrderSummaryResponse(
+            order.getOrderId(), tenantId, order.getStatus(), order.getTotalAmount(),
+            order.getCurrency(), paymentStatus, order.getRazorpayOrderId(),
+            order.getCreatedAt(), order.getUpdatedAt());
+    }
+
+    private OrderStatusResponse mapToStatus(Order order) {
+        List<OrderItemResponse> items = order.getItems() == null ? List.of() : order.getItems().stream()
+            .map(this::mapItem)
+            .collect(Collectors.toList());
+        String paymentStatus = "PENDING";
+        if (order.getPayments() != null && !order.getPayments().isEmpty()) {
+            Payment payment = order.getPayments().iterator().next();
+            paymentStatus = payment.getStatus();
+        }
+        return new OrderStatusResponse(
+            order.getOrderId(),
+            order.getTenant().getTenantId(),
+            order.getStatus(),
+            order.getTotalAmount(),
+            order.getCurrency(),
+            paymentStatus,
+            order.getCreatedAt(),
+            order.getUpdatedAt(),
+            items);
+    }
+
+    private OrderItemResponse mapItem(OrderItem item) {
+        String productId = item.getProduct() != null ? item.getProduct().getProductId() : null;
+        String productName = item.getProduct() != null ? item.getProduct().getName() : "Item";
+        return new OrderItemResponse(productId, productName, item.getQuantity(),
+            item.getUnitPrice(), item.getTotalPrice());
+    }
+}
