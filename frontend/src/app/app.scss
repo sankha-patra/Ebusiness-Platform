@@ -183,12 +183,6 @@
   z-index: 1;
   border-radius: 999px !important;
   min-width: 88px !important;
-  background: var(--navy, #0d3b66) !important;
-  color: #fff !important;
-}
-
-.greeting-btn:hover {
-  background: #0a2f52 !important;
 }
 
 @keyframes greeting-fade-in {
