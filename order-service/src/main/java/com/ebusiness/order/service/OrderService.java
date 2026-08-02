@@ -36,7 +36,7 @@ public class OrderService {
 
         Page<Order> orders = (tenantId != null && !tenantId.isBlank())
             ? orderRepository.findByTenant_TenantId(tenantId, pageable)
-            : orderRepository.findAll(pageable);
+            : orderRepository.findAllWithPayments(pageable);
 
         List<OrderSummaryResponse> content = orders.getContent().stream()
             .map(this::mapToSummary)
@@ -86,6 +86,14 @@ public class OrderService {
         String paymentStatus = "NONE";
         if (order.getPayments() != null && !order.getPayments().isEmpty()) {
             paymentStatus = order.getPayments().iterator().next().getStatus();
+        } else {
+            // Collection may be empty when list query doesn't join payments — derive from order status
+            paymentStatus = switch (order.getStatus() == null ? "" : order.getStatus()) {
+                case "PAID" -> "CAPTURED";
+                case "PAYMENT_FAILED" -> "FAILED";
+                case "PAYMENT_PENDING" -> "CREATED";
+                default -> "NONE";
+            };
         }
         String tenantId = order.getTenant() != null ? order.getTenant().getTenantId() : null;
         return new OrderSummaryResponse(

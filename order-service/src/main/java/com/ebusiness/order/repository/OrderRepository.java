@@ -3,6 +3,7 @@ package com.ebusiness.order.repository;
 import com.ebusiness.order.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,5 +24,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         """)
     Optional<Order> findByTenantAndId(@Param("tenantId") String tenantId, @Param("orderId") String orderId);
 
+    @EntityGraph(attributePaths = {"tenant", "payments"})
     Page<Order> findByTenant_TenantId(String tenantId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"tenant", "payments"})
+    @Query("SELECT o FROM Order o")
+    Page<Order> findAllWithPayments(Pageable pageable);
 }
