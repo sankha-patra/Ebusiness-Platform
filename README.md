@@ -21,10 +21,15 @@ Event contracts stay thin JSON (`PaymentConfirmed` with `paymentId`/`orderId`) â
 
 | Screen | What it shows |
 |--------|----------------|
-| Orders | Paginated orders with status + Razorpay ids |
+| Orders | Paginated orders (pending / paid / failed) + Razorpay ids |
 | Products | Catalog grid with Buy |
 | Payments | Checkout after selecting a product (Razorpay test keys) |
-| Messages | Kafka `payment-confirmed` â†’ notification list |
+| Payment success | Razorpay verified / confirmed card |
+| Payment pending | Status `CREATED` while waiting |
+| Payment failed | Checkout closed / failed card |
+| Messages | Kafka `payment-confirmed` â†’ SMS mock list |
+| Greeting | Session greeting popup + page blur |
+| Kafka toast | Payment confirmation snackbar + page blur |
 
 ### Orders
 ![Orders](docs/screenshots/01-orders.png)
@@ -35,8 +40,23 @@ Event contracts stay thin JSON (`PaymentConfirmed` with `paymentId`/`orderId`) â
 ### Payments
 ![Payments](docs/screenshots/03-payments.png)
 
-### Messages (payment notifications)
-![Messages](docs/screenshots/04-messages.png)
+### Payment success (Razorpay)
+![Payment success](docs/screenshots/04-payment-success.png)
+
+### Payment pending
+![Payment pending](docs/screenshots/05-payment-pending.png)
+
+### Payment failed
+![Payment failed](docs/screenshots/06-payment-failed.png)
+
+### Messages (Kafka payment notifications)
+![Messages](docs/screenshots/07-messages-kafka.png)
+
+### Greeting popup
+![Greeting](docs/screenshots/08-greeting-popup.png)
+
+### Kafka success toast
+![Kafka toast](docs/screenshots/09-kafka-toast.png)
 
 ### Run services
 

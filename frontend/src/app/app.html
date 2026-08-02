@@ -1,11 +1,11 @@
-<div class="app-shell">
-  <mat-toolbar class="top-bar">
+<div class="app-shell" [class.app-shell--dimmed]="pageBlurred()">
+  <mat-toolbar class="top-bar frost-nav">
     <span class="brand">EBusiness</span>
     <nav class="nav">
-      <a mat-button routerLink="/orders" routerLinkActive="active">Orders</a>
-      <a mat-button routerLink="/products" routerLinkActive="active">Products</a>
-      <a mat-button routerLink="/payments" routerLinkActive="active">Payments</a>
-      <a mat-button routerLink="/notifications" routerLinkActive="active">
+      <a mat-button routerLink="/orders" routerLinkActive="active" class="nav-pill">Orders</a>
+      <a mat-button routerLink="/products" routerLinkActive="active" class="nav-pill">Products</a>
+      <a mat-button routerLink="/payments" routerLinkActive="active" class="nav-pill">Payments</a>
+      <a mat-button routerLink="/notifications" routerLinkActive="active" class="nav-pill">
         <span
           [matBadge]="unreadCount() || null"
           matBadgeColor="warn"
@@ -20,3 +20,19 @@
     <router-outlet></router-outlet>
   </main>
 </div>
+
+@if (greeting(); as msg) {
+  <div class="greeting-layer" role="presentation">
+    <div class="greeting-scrim" (click)="dismissGreeting()"></div>
+    <div
+      class="greeting-popup"
+      role="dialog"
+      aria-modal="true"
+      aria-live="polite"
+      (click)="$event.stopPropagation()"
+    >
+      <p class="greeting-text">{{ msg }}</p>
+      <button mat-flat-button type="button" class="greeting-btn" (click)="dismissGreeting()">Hi</button>
+    </div>
+  </div>
+}

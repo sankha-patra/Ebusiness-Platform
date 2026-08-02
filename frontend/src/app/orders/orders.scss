@@ -1,5 +1,5 @@
 .page-card {
-  border-radius: 14px !important;
+  border-radius: var(--app-radius, 14px) !important;
 }
 
 .full-width {
@@ -20,13 +20,13 @@
 }
 
 .empty {
-  color: #666;
+  color: #555;
   padding: 1rem 0;
 }
 
 .status-pill {
   display: inline-block;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   border-radius: 999px;
   padding: 0.15rem 0.55rem;
   font-size: 0.8rem;

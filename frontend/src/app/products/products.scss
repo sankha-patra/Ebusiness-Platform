@@ -1,5 +1,5 @@
 .page-card {
-  border-radius: 14px !important;
+  border-radius: var(--app-radius, 14px) !important;
 }
 
 .filter {
@@ -16,18 +16,10 @@
 }
 
 .product-card {
-  border-radius: 14px !important;
+  border-radius: var(--app-radius, 14px) !important;
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid #ddd !important;
-  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
-}
-
-.product-card:hover {
-  border-color: #111 !important;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  background: #fcfcfc;
 }
 
 .product-card mat-card-header {
@@ -43,7 +35,7 @@
 
 .product-card mat-card-subtitle {
   font-size: 0.8rem !important;
-  color: #666 !important;
+  color: #555 !important;
 }
 
 .product-card mat-card-content {
@@ -58,7 +50,7 @@
 }
 
 .description {
-  color: #555;
+  color: #444;
   font-size: 0.92rem;
   line-height: 1.4;
   min-height: 2.8em;
@@ -76,7 +68,7 @@
 }
 
 .stock {
-  color: #666;
+  color: #555;
   font-size: 0.85rem;
 }
 
@@ -90,5 +82,5 @@
 }
 
 .empty {
-  color: #666;
+  color: #555;
 }

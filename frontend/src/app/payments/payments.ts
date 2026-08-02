@@ -115,6 +115,34 @@ export class PaymentsComponent implements OnInit {
           this.receipt = 'rcpt-' + Date.now();
         }
       }
+
+      // Optional UI preview states for docs/screenshots (?demo=success|failed|pending)
+      const demo = params.get('demo');
+      if (demo === 'success') {
+        this.showSuccess('Payment confirmed', 'Payment verified successfully.', {
+          orderId: 'ord-demo-1001',
+          paymentId: 'pay-demo-1001',
+          razorpayPaymentId: 'pay_demo_rzp_1001',
+          product: 'Ultrabook 14"'
+        });
+      } else if (demo === 'failed') {
+        this.showFailed('Payment failed', 'Checkout closed before completion. Order stays PAYMENT_PENDING.', {
+          razorpayOrderId: 'order_demo_rzp_1002'
+        });
+      } else if (demo === 'pending') {
+        this.razorpayOrderId = 'order_demo_rzp_1002';
+        this.paymentStatus.set({
+          paymentId: 'pay-demo-1002',
+          razorpayPaymentId: '',
+          razorpayOrderId: 'order_demo_rzp_1002',
+          status: 'CREATED',
+          amount: 4999,
+          currency: 'INR',
+          paymentMethod: 'card',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+      }
     });
   }
 

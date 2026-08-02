@@ -1,5 +1,5 @@
 .page-card {
-  border-radius: 16px !important;
+  border-radius: var(--app-radius, 18px) !important;
 }
 
 mat-card-header {
@@ -11,6 +11,6 @@ mat-card-header {
 }
 
 .empty {
-  color: #666;
+  color: #555;
   padding: 1rem 0;
 }

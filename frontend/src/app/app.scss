@@ -2,11 +2,19 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: filter 0.35s ease;
 }
 
-.top-bar {
-  background: #111 !important;
-  color: #fff !important;
+.app-shell--dimmed {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.top-bar.frost-nav {
+  background: #cceef8 !important;
+  color: var(--navy, #0d3b66) !important;
+  border-bottom: 1px solid rgba(13, 59, 102, 0.08);
   min-height: 56px !important;
   height: auto !important;
   padding: 0.35rem 1rem !important;
@@ -15,16 +23,18 @@
   top: 0;
   z-index: 20;
   box-sizing: border-box;
-  overflow: hidden !important;
+  overflow: visible !important;
   align-items: center !important;
 }
 
 .brand {
+  font-family: var(--app-font-display, 'Plus Jakarta Sans', sans-serif);
   font-weight: 600;
-  font-size: 1.05rem;
-  letter-spacing: 0.01em;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
   white-space: nowrap;
   line-height: 1;
+  color: var(--navy, #0d3b66);
 }
 
 .nav {
@@ -37,20 +47,59 @@
   max-width: 100%;
 }
 
-.nav a {
-  color: #f2f2f2 !important;
+.nav a.nav-pill {
+  color: var(--navy, #0d3b66) !important;
+  font-family: var(--app-font, 'Inter', sans-serif);
+  font-weight: 500;
   border-radius: 999px !important;
   min-width: auto !important;
   height: 36px !important;
   line-height: 36px !important;
   padding: 0 0.85rem !important;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  transition: background 0.2s ease;
 }
 
-.nav a.active {
-  background: rgba(255, 255, 255, 0.14) !important;
+/* Liquid border on nav hover — no size change */
+.nav a.nav-pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    120deg,
+    #cceef8,
+    #acd5f3,
+    #7eb8e0,
+    #cceef8,
+    #acd5f3
+  );
+  background-size: 300% 300%;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
 }
 
-/* Keep badge from forcing a scrollbar inside the toolbar */
+.nav a.nav-pill:hover::after,
+.nav a.nav-pill.active::after {
+  opacity: 1;
+  animation: liquid-border 2.8s linear infinite;
+}
+
+.nav a.nav-pill:hover,
+.nav a.nav-pill.active {
+  background: rgba(255, 255, 255, 0.55) !important;
+}
+
 .nav a .mat-badge-content,
 :host ::ng-deep .nav .mat-badge-content {
   top: 2px !important;
@@ -65,7 +114,89 @@
   padding: 1.25rem 1.25rem 2rem;
 }
 
+.greeting-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  animation: greeting-fade-in 0.3s ease;
+}
+
+.greeting-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(204, 238, 248, 0.35);
+}
+
+.greeting-popup {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 360px);
+  padding: 1.6rem 1.5rem 1.35rem;
+  text-align: center;
+  background: #fff;
+  border-radius: var(--app-radius, 14px);
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: greeting-fade-in 0.3s ease;
+}
+
+.greeting-popup::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    120deg,
+    #cceef8,
+    #acd5f3,
+    #7eb8e0,
+    #cceef8
+  );
+  background-size: 300% 300%;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: liquid-border 2.8s linear infinite;
+  pointer-events: none;
+}
+
+.greeting-text {
+  margin: 0 0 1.15rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  color: #111;
+  position: relative;
+  z-index: 1;
+}
+
+.greeting-btn {
+  position: relative;
+  z-index: 1;
+  border-radius: 999px !important;
+  min-width: 88px !important;
+  background: var(--navy, #0d3b66) !important;
+  color: #fff !important;
+}
+
+.greeting-btn:hover {
+  background: #0a2f52 !important;
+}
+
+@keyframes greeting-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 :host ::ng-deep .payment-success-snack {
-  --mdc-snackbar-container-color: #111;
+  --mdc-snackbar-container-color: var(--navy, #0d3b66);
   --mdc-snackbar-supporting-text-color: #fff;
 }
