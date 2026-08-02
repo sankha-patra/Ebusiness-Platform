@@ -17,6 +17,27 @@ A full-stack enterprise B2B platform with Redis caching, Kafka event streaming, 
 
 Event contracts stay thin JSON (`PaymentConfirmed` with `paymentId`/`orderId`) — no fat `common-dto` JAR.
 
+## Screenshots
+
+| Screen | What it shows |
+|--------|----------------|
+| Orders | Paginated orders with status + Razorpay ids |
+| Products | Catalog grid with Buy |
+| Payments | Checkout after selecting a product (Razorpay test keys) |
+| Messages | Kafka `payment-confirmed` → notification list |
+
+### Orders
+![Orders](docs/screenshots/01-orders.png)
+
+### Products
+![Products](docs/screenshots/02-products.png)
+
+### Payments
+![Payments](docs/screenshots/03-payments.png)
+
+### Messages (payment notifications)
+![Messages](docs/screenshots/04-messages.png)
+
 ### Run services
 
 ```bash
